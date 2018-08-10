@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS mathpractice_db;
+USE mathpractice_db;
+
+CREATE TABLE learners (
+	`google_id` VARCHAR(200) NOT NULL PRIMARY KEY,
+	`first` VARCHAR(100) NOT NULL,
+	`last` VARCHAR(100) NOT NULL,
+	`email` VARCHAR(100) NOT NULL,
+	`imageURL` VARCHAR(200) NOT NULL
+);
