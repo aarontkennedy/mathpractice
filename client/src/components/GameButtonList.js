@@ -8,19 +8,19 @@ class GameButtonList extends Component {
         return (
             <ul className="text-center GameButtonList">
                 <li>
-                    <Link to="/game/additionFacts" className="button" >
+                    <Link to="/game/facts/addition" className="button" >
                         <FontAwesomeIcon icon="plus" /> Addition</Link>
                 </li>
                 <li>
-                    <Link to="/game/subtractionFacts" className="button" >
+                    <Link to="/game/facts/subtraction" className="button" >
                         <FontAwesomeIcon icon="minus" /> Subtraction</Link>
                 </li>
                 <li>
-                    <Link to="/game/multiplicationFacts" className="button" >
+                    <Link to="/game/facts/multiplication" className="button" >
                         <FontAwesomeIcon icon="times" /> Multiplication</Link>
                 </li>
                 <li>
-                    <Link to="/game/divisionFacts" className="button" >
+                    <Link to="/game/facts/division" className="button" >
                         <FontAwesomeIcon icon="divide" /> Division</Link>
                 </li>
                 <li>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import './App.css';
 import Home from "./components/pages/Home";
 import Game from "./components/pages/Game";
-import AdditionQuestion from "./quizGenerators/AdditionQuestion";
 import PrivateRoute from "./components/PrivateRoute";
 import callServer from "./utils/callServer";
 import Header from "./components/Header";
@@ -19,28 +18,23 @@ class App extends Component {
   };
 
   successfulSignIn = (response) => {
-    alert("successfulSignIn");
     console.log(response);
     console.log(response.profileObj);
-    this.setState({
-      signedIn: true,
+    let profile = {
       googleID: response.profileObj.googleId,
       first: response.profileObj.givenName,
       last: response.profileObj.familyName,
       email: response.profileObj.email,
       imageURL: response.profileObj.imageUrl
-    });
-    callServer.setUser({
-      googleID: response.profileObj.googleId,
-      first: response.profileObj.givenName,
-      last: response.profileObj.familyName,
-      email: response.profileObj.email,
-      imageURL: response.profileObj.imageUrl
-    });
+    }
+    this.setState(profile);
+    callServer.setLearner(profile)
+    .then((res)=>{console.log("callServer.setLearner succeeded");})
+    .catch((err)=>{console.log(err)});
   }
 
   unsuccessfulSignIn = (response) => {
-    console.log("unsuccessfulSignIn");
+    alert("unsuccessfulSignIn");
     console.log(response);
 
     // what else should I do? 
@@ -67,15 +61,24 @@ class App extends Component {
             userID={this.state.googleID}
             signOut={this.signOut} />
           <Switch>
-            <PrivateRoute path="/game/additionFacts"
+            <PrivateRoute exact path="/game/facts/:operation"
               component={Game}
               userID={this.state.googleID}
             />
+            <Route exact path="/signin"
+              render={(props) => <Home {...props}
+                userID={this.state.googleID}
+                onSuccess={this.successfulSignIn}
+                onFailure={this.unsuccessfulSignIn}
+                message="Please Sign in to ..."
+              />} />
             <Route exact path="/"
               render={(props) => <Home {...props}
-                successfulSignin={this.successfulSignIn}
-                unsuccessfulSignIn={this.unsuccessfulSignIn}
-                userID={this.state.googleID} />} />
+                userID={this.state.googleID}
+                onSuccess={this.successfulSignIn}
+                onFailure={this.unsuccessfulSignIn}
+                message=""
+              />} />
           </Switch>
         </div>
       </Router>

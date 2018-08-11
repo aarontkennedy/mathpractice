@@ -18,8 +18,6 @@ class AudioControl {
 
         this.element.attr("src", this.playList[Math.floor(Math.random() * (this.playList.length))]);
 
-        this.resetSpeed();
-
         this.domElement.play();
     }
 

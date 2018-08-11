@@ -2,37 +2,104 @@ const databaseConnectionInfo = require("./mySQLconnection.js");
 const mysql = require("mysql");
 const pool = mysql.createPool(databaseConnectionInfo);
 
-function performDatabaseCall(queryStr, parameters = null, callback) {
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            //console.log(err);
-            callback(err, { "code": 100, "status": "Error in connection database" });
-        }
-        //console.log('connected as id ' + connection.threadId);
+function performDatabaseCall(queryStr, parameters = null) {
+    return new Promise(function (resolve, reject) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                reject(err);
+            }
+            console.log('connected as id ' + connection.threadId);
 
-        // conduct the actual requested query
-        connection.query(queryStr, parameters, function (err, result) {
-            connection.release();
-            callback(err, result);
+            // conduct the actual requested query
+            connection.query(queryStr, parameters, function (err, result) {
+                if (err) {
+                    reject(err);
+                }
+                connection.release();
+                resolve(result);
+            });
         });
     });
 }
 
-
 const orm = {
-    /*upsertUser: () => {},
+    /*
     resetTopicQuestions:  () => {},
     getTopicQuestions: () => {},
     updateTopicResults: () => {},
     getTopicStatistics: () => {},*/
-    upsertUser: function (id, first, last, callback) {
-        var queryString =
-            'INSERT INTO learners (`google_id`, `first`, `last`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `first`=?, `last`=?;';
-        performDatabaseCall(queryString, [id, first, last, first, last], callback);
+    upsertLearner: function (profileObj) {
+        let queryString = 'INSERT INTO learners ';
+        queryString += 'VALUES (?, ?, ?, ?, ?, NOW(), NOW()) ';
+        queryString += 'ON DUPLICATE KEY UPDATE `first`=?, `last`=?, `email`=?, `imageURL`=?, `last_visit`=NOW();';
+        return performDatabaseCall(queryString,
+            [profileObj.googleID,
+            profileObj.first,
+            profileObj.last,
+            profileObj.email,
+            profileObj.imageURL,
+            profileObj.first,
+            profileObj.last,
+            profileObj.email,
+            profileObj.imageURL]);
+    },
+    getFacts: function (type) {
+        var queryString = "SELECT problem FROM basicMathFacts ";
+        queryString += "WHERE basicMathFacts.`type` = ?;";
+
+        return performDatabaseCall(queryString, [type]);
+    },
+    getLearnersFacts: function (learnerID, type) {
+        var queryString = "SELECT basicMathFacts.*, problemStats.*  FROM learners ";
+        queryString += "INNER JOIN problemStats ON learners.`google_id` = problemStats.`learner_id`";
+        queryString += "INNER JOIN basicMathFacts ON problemStats.`problem_id`= basicMathFacts.`problem`";
+        queryString += "WHERE learners.`google_id` = ?";
+        queryString += "AND basicMathFacts.`type` = ? ";
+        queryString += "ORDER BY problemStats.`streak`, basicMathFacts.`ease` LIMIT 20;";
+
+        return performDatabaseCall(queryString, [learnerID, type]);
+    },
+    createLearnerFact: function (learnerID, problem) {
+        let queryString = 'INSERT INTO problemStats ';
+        queryString += 'VALUES (?, ?, 0, 0, 0, NOW());';
+        return performDatabaseCall(queryString, [problem, learnerID]);
+    },
+    createLearnerFacts: function (learnerID, problemsArray) {
+        let q = 'INSERT INTO problemStats VALUES ';
+
+        for (let i = 0; i < problemsArray.length; i++) {
+            q += `("${problemsArray[i].problem}", "${learnerID}", 0, 0, 0, NOW())`;
+            if (i < problemsArray.length - 1) {
+                q += ",";
+            }
+        }
+        q += ";";
+        return performDatabaseCall(q, null);
+    },
+    updateLearnerFact: function (factProblem) {
+        let query = `UPDATE problemStats
+        SET attempts=?, correct=?, streak=?, last_update=NOW()
+        WHERE problem_id=? AND learner_id=?;`;
+        return performDatabaseCall(query,
+            [factProblem.attempts,
+                factProblem.correct, 
+                factProblem.streak,
+                factProblem.problem_id,
+                factProblem.learner_id]);
+    },
+    getLearnerFactsStats: function (learnerID, type) {
+        var queryString = 'SELECT ';
+        queryString += 'SUM(problemStats.attempts) as totalAttempts, ';
+        queryString += 'SUM(problemStats.correct) as totalCorrect, ';
+        queryString += 'ROUND(AVG(problemStats.correct/problemStats.attempts)*100,1) as averageProficiencyPercent ';
+        queryString += 'FROM learners ';
+        queryString += 'INNER JOIN problemStats ON learners.`google_id` = problemStats.`learner_id` ';
+        queryString += 'INNER JOIN basicMathFacts ON problemStats.`problem_id`= basicMathFacts.`problem` ';
+        queryString += 'WHERE learners.`google_id` = ? ';
+        queryString += 'AND basicMathFacts.`type` = ?; ';
+
+        return performDatabaseCall(queryString, [learnerID, type]);
     }
-
-
-
 
     /*searchBurgerName: function (textInput, callback) {
         const queryString = `SELECT * FROM burgers WHERE name LIKE ? LIMIT 5;`;

@@ -16,12 +16,13 @@ app.use(bodyParser.json());
 // express will handle the static files
 app.use(express.static('./client/build/'));
 
-require('./controller/routing/apiRoutes.js')(app);
-
+require('./controller/routes/apiRoutes.js')(app);
+/*
 // this picks up any other routes and sends them to the react app to handle - needed?
 app.get('*', function(req, res) {
   res.sendfile('./client/build/index.html');
 });
+*/
 
 app.listen(PORT, function () {
   console.log("App listening on PORT " + PORT);
