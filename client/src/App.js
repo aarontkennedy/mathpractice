@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import './App.css';
 import Home from "./components/pages/Home";
-import Game from "./components/pages/Game";
+import FactsPractice from "./components/pages/FactsPractice";
+import IntegersPractice from "./components/pages/IntegersPractice";
 import PrivateRoute from "./components/PrivateRoute";
 import callServer from "./utils/callServer";
 import Header from "./components/Header";
@@ -61,8 +62,12 @@ class App extends Component {
             userID={this.state.googleID}
             signOut={this.signOut} />
           <Switch>
-            <PrivateRoute exact path="/game/facts/:operation"
-              component={Game}
+            <PrivateRoute exact path="/game/facts"
+              component={FactsPractice}
+              userID={this.state.googleID}
+            />
+            <PrivateRoute exact path="/game/integers"
+              component={IntegersPractice}
               userID={this.state.googleID}
             />
             <Route exact path="/signin"

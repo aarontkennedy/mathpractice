@@ -10,7 +10,7 @@ fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
     }
 
     let insert = "USE mathpractice_db;\n";
-    insert += "INSERT INTO basicMathFacts ";
+    insert += "INSERT INTO facts ";
     insert += "(`problem`, `type`, `ease`, `left`, `right`, `solution`)\n";
     insert += "VALUES";
 

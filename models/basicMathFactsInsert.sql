@@ -1,5 +1,5 @@
 USE mathpractice_db;
-INSERT INTO basicMathFacts (`problem`, `type`, `ease`, `left`, `right`, `solution`)
+INSERT INTO facts (`problem`, `type`, `ease`, `left`, `right`, `solution`)
 VALUES
 ("0 + 0 = ", "addition", 0, 0, 0, 0),
 ("0 + 1 = ", "addition", 0, 0, 1, 1),

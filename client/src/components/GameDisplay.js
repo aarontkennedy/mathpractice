@@ -29,14 +29,14 @@ class GameDisplay extends Component {
         }*/
 
     startGame = () => {
-        this.nextQuestion();
+        this.nextProblem();
     }
 
-    nextQuestion = () => {
+    nextProblem = () => {
         if (this.problems.length) {
-            console.log("nextQuestion");
+            console.log("nextProblem");
             const next = this.problems.pop();
-            console.log(next);
+            //console.log(next);
             this.setState({
                 isGameOver: false,
                 textInput: "",
@@ -50,7 +50,7 @@ class GameDisplay extends Component {
             
         }
         else {
-            console.log("game over - no more questions");
+            console.log("game over - no more problems");
             this.gameOver();
         }
     }
@@ -98,38 +98,37 @@ class GameDisplay extends Component {
 
     handleCheckAnswer = (event, timedOut = false) => {
         clearTimeout(this.timeoutID);
-        const correct = this.state.currentProblem.solution ===
+
+        let currentProblemCopy = this.state.currentProblem;
+        const correct = currentProblemCopy.solution ===
             parseInt(this.state.textInput, 10);
 
         if (correct) {
-            this.state.currentProblem.attempts++;
-            this.state.currentProblem.correct++;
-            this.state.currentProblem.streak++;
-            this.nextQuestion();
+            console.log("Correct!");
+            currentProblemCopy.attempts++;
+            currentProblemCopy.correct++;
+            currentProblemCopy.streak++;
+            this.nextProblem();
         }
         else {
-            this.state.currentProblem.attempts++;
-            this.state.currentProblem.streak = 0;
-            if (!this.state.currentProblem.doneBefore) {
-                this.problems.unshift(this.state.currentProblem);
-                this.state.currentProblem.doneBefore = true;
+            currentProblemCopy.attempts++;
+            currentProblemCopy.streak = 0;
+            if (!currentProblemCopy.doneBefore) {
+                currentProblemCopy.doneBefore = true;
+                this.problems.unshift(currentProblemCopy);
             }
             this.setState({ showCurrentProblemSolution: true });
         }
-        callServer.setLearnerFact(this.state.currentProblem);
+        callServer.updateLearnerProblemStats(this.props.problemType, currentProblemCopy);
     }
 
     gameOver() {
-        this.cleanUp();
         this.setState({ isGameOver: true });
         this.props.handleGameIsDone();
     }
 
-    cleanUp() {
-    }
-
     componentWillUnmount() {
-        this.cleanUp();
+        clearTimeout(this.timeoutID);
     }
 
     render() {
@@ -141,7 +140,7 @@ class GameDisplay extends Component {
                         {this.state.showCurrentProblemSolution ? 
                         <ShowProblemSolution 
                         problem={this.state.currentProblem}
-                        handleNextQuestionClick={this.nextQuestion} />
+                        handleNextProblemClick={this.nextProblem} />
                         :
                             <div className="cell columns text-center">
                                 {this.state.currentProblem ?

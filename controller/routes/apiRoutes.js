@@ -3,6 +3,7 @@ module.exports = function (app) {
     const orm = require("../../models/orm.js");
 
     app.post("/api/learner", function (req, res) {
+        console.log("upsertLearner() called");
         console.log(req.body);
         orm.upsertLearner(req.body)
             .then((data) => { return res.json(data); })
@@ -12,8 +13,10 @@ module.exports = function (app) {
             });
     });
 
-    app.get("/api/:learner/facts/:type", function (req, res) {
-        orm.getLearnersFacts(req.params.learner, req.params.type)
+    app.get("/api/:learner/:problemType", function (req, res) {
+        console.log("getLearnersProblems() called");
+        console.log(req.params);
+        orm.getLearnersProblems(req.params.learner, req.params.problemType)
             .then((data) => {
                 if (data.length > 0) {
                     return res.json(data);
@@ -21,17 +24,11 @@ module.exports = function (app) {
                 // this must be a new user and we need to 
                 // create problem statistics for them
                 console.log("New user, make new problemStats.");
-                orm.getFacts(req.params.type)
-                    .then((data) => {
-                        console.log("Getting facts.");
-                        console.log(data);
-                        return orm.createLearnerFacts(req.params.learner,
-                            data);
-                    })
+                orm.createLearnerFacts(req.params.learner, req.params.problemType)
                     .then((data) => {
                         console.log("Created facts, now retrieving.");
                         console.log(data);
-                        return orm.getLearnersFacts(req.params.learner, req.params.type);
+                        return orm.getLearnersProblems(req.params.learner, req.params.problemType);
                     })
                     .then((data) => {
                         return res.json(data);
@@ -47,9 +44,10 @@ module.exports = function (app) {
             });
     });
 
-    app.put("/api/:learner/facts", function (req, res) {
+    app.put("/api/:learner/:problemType", function (req, res) {
+        console.log("updateLearnerProblemStats() called");
         console.log(req.body);
-        orm.updateLearnerFact(req.body)
+        orm.updateLearnerProblemStats(req.body)
             .then((data) => { return res.json(data); })
             .catch((error) => {
                 console.log(error);
@@ -57,10 +55,12 @@ module.exports = function (app) {
             });
     });
 
-    app.get("/api/:learner/facts/:type/stats", function (req, res) {
-        orm.getLearnerFactsStats(req.params.learner, req.params.type)
+    app.get("/api/:learner/:problemType/stats", function (req, res) {
+        console.log("getLearnerStats() called");
+        console.log(req.params.problemType);
+        orm.getLearnerStats(req.params.learner, req.params.problemType)
             .then((data) => {
-                console.log(data);
+                //console.log(data);
                 return res.json(data);
             })
             .catch((error) => {
@@ -68,7 +68,6 @@ module.exports = function (app) {
                 return res.json(error);
             });
     });
-
 
     /*
     app.get("/api/facts/:type", function (req, res) {

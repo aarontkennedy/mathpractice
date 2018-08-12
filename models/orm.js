@@ -22,6 +22,12 @@ function performDatabaseCall(queryStr, parameters = null) {
     });
 }
 
+function verifyProblemTypeTableName(problemType) {
+    if (problemType != "facts" && problemType != "integers") {
+        throw new Error("verifyProblemTypeTableName() Bad problemType="+problemType);
+    }
+}
+
 const orm = {
     /*
     resetTopicQuestions:  () => {},
@@ -29,9 +35,9 @@ const orm = {
     updateTopicResults: () => {},
     getTopicStatistics: () => {},*/
     upsertLearner: function (profileObj) {
-        let queryString = 'INSERT INTO learners ';
-        queryString += 'VALUES (?, ?, ?, ?, ?, NOW(), NOW()) ';
-        queryString += 'ON DUPLICATE KEY UPDATE `first`=?, `last`=?, `email`=?, `imageURL`=?, `last_visit`=NOW();';
+        let queryString = `
+INSERT INTO learners VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+ON DUPLICATE KEY UPDATE first=?, last=?, email=?, imageURL=?, last_visit=NOW();`
         return performDatabaseCall(queryString,
             [profileObj.googleID,
             profileObj.first,
@@ -43,63 +49,56 @@ const orm = {
             profileObj.email,
             profileObj.imageURL]);
     },
-    getFacts: function (type) {
-        var queryString = "SELECT problem FROM basicMathFacts ";
-        queryString += "WHERE basicMathFacts.`type` = ?;";
 
-        return performDatabaseCall(queryString, [type]);
-    },
-    getLearnersFacts: function (learnerID, type) {
-        var queryString = "SELECT basicMathFacts.*, problemStats.*  FROM learners ";
-        queryString += "INNER JOIN problemStats ON learners.`google_id` = problemStats.`learner_id`";
-        queryString += "INNER JOIN basicMathFacts ON problemStats.`problem_id`= basicMathFacts.`problem`";
-        queryString += "WHERE learners.`google_id` = ?";
-        queryString += "AND basicMathFacts.`type` = ? ";
-        queryString += "ORDER BY problemStats.`streak`, basicMathFacts.`ease` LIMIT 20;";
+    getLearnersProblems: function (learnerID, problemType) {
+        verifyProblemTypeTableName(problemType);
+        var queryString = `
+SELECT ${problemType}.*, problemStats.*  FROM learners
+INNER JOIN problemStats ON learners.google_id = problemStats.learner_id
+INNER JOIN ${problemType} ON problemStats.problem_id= ${problemType}.problem
+WHERE learners.google_id = ?
+ORDER BY ${problemType}.type, problemStats.streak, ${problemType}.ease LIMIT 20;`;
 
-        return performDatabaseCall(queryString, [learnerID, type]);
+        return performDatabaseCall(queryString, [learnerID]);
     },
-    createLearnerFact: function (learnerID, problem) {
-        let queryString = 'INSERT INTO problemStats ';
-        queryString += 'VALUES (?, ?, 0, 0, 0, NOW());';
-        return performDatabaseCall(queryString, [problem, learnerID]);
-    },
-    createLearnerFacts: function (learnerID, problemsArray) {
-        let q = 'INSERT INTO problemStats VALUES ';
 
-        for (let i = 0; i < problemsArray.length; i++) {
-            q += `("${problemsArray[i].problem}", "${learnerID}", 0, 0, 0, NOW())`;
-            if (i < problemsArray.length - 1) {
-                q += ",";
-            }
-        }
-        q += ";";
-        return performDatabaseCall(q, null);
+    createLearnerFacts: function (learnerID, problemType) {
+        verifyProblemTypeTableName(problemType);
+        let q = `
+INSERT INTO problemStats (learner_id, problem_id) 
+SELECT ?, problem FROM ${problemType};`;
+
+        return performDatabaseCall(q, [learnerID]);
     },
-    updateLearnerFact: function (factProblem) {
-        let query = `UPDATE problemStats
-        SET attempts=?, correct=?, streak=?, last_update=NOW()
-        WHERE problem_id=? AND learner_id=?;`;
+
+    updateLearnerProblemStats: function (factProblem) {
+        let query = `
+UPDATE problemStats
+SET attempts=?, correct=?, streak=?, last_update=NOW()
+WHERE problem_id=? AND learner_id=?;`;
         return performDatabaseCall(query,
             [factProblem.attempts,
-                factProblem.correct, 
-                factProblem.streak,
-                factProblem.problem_id,
-                factProblem.learner_id]);
+            factProblem.correct,
+            factProblem.streak,
+            factProblem.problem_id,
+            factProblem.learner_id]);
     },
-    getLearnerFactsStats: function (learnerID, type) {
-        var queryString = 'SELECT ';
-        queryString += 'SUM(problemStats.attempts) as totalAttempts, ';
-        queryString += 'SUM(problemStats.correct) as totalCorrect, ';
-        queryString += 'ROUND(AVG(problemStats.correct/problemStats.attempts)*100,1) as averageProficiencyPercent ';
-        queryString += 'FROM learners ';
-        queryString += 'INNER JOIN problemStats ON learners.`google_id` = problemStats.`learner_id` ';
-        queryString += 'INNER JOIN basicMathFacts ON problemStats.`problem_id`= basicMathFacts.`problem` ';
-        queryString += 'WHERE learners.`google_id` = ? ';
-        queryString += 'AND basicMathFacts.`type` = ?; ';
+    getLearnerStats: function (learnerID, problemType) {
+        verifyProblemTypeTableName(problemType);
 
-        return performDatabaseCall(queryString, [learnerID, type]);
+        var queryString = `SELECT ${problemType}.type,
+SUM(problemStats.attempts) as totalAttempts, 
+SUM(problemStats.correct) as totalCorrect, 
+ROUND(AVG(problemStats.correct/problemStats.attempts)*100,1) as averageProficiencyPercent 
+FROM learners 
+INNER JOIN problemStats ON learners.google_id = problemStats.learner_id 
+INNER JOIN ${problemType} ON problemStats.problem_id= ${problemType}.problem 
+WHERE learners.google_id = ? GROUP BY ${problemType}.type; `;
+
+        return performDatabaseCall(queryString, [learnerID]);
     }
+
+
 
     /*searchBurgerName: function (textInput, callback) {
         const queryString = `SELECT * FROM burgers WHERE name LIKE ? LIMIT 5;`;

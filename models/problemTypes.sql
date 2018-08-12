@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS mathpractice_db;
 USE mathpractice_db;
 
-CREATE TABLE basicMathFacts (
+CREATE TABLE facts (
 	`problem` VARCHAR(10) NOT NULL PRIMARY KEY,
 	`type` ENUM('addition', 'subtraction', 'multiplication', 'division') NOT NULL,
 	`ease` INT NOT NULL DEFAULT 0, 
@@ -17,6 +17,6 @@ CREATE TABLE problemStats (
 	`correct` INT NOT NULL DEFAULT 0, 
 	`streak` INT NOT NULL DEFAULT 0, 
 	`last_update` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (`problem_id`) REFERENCES basicMathFacts(`problem`),
+	FOREIGN KEY (`problem_id`) REFERENCES facts(`problem`),
 	FOREIGN KEY (`learner_id`) REFERENCES learners(`google_id`)
 );

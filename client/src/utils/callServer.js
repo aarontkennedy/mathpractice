@@ -4,20 +4,21 @@ export default {
   setLearner: function (profile) {
     return axios.post("/api/learner", profile);
   },
-  getLearnerFacts: function (userGoogleID, type) {
-    const url = `/api/${userGoogleID}/facts/${type}`;
+  getLearnerProblems: function (userGoogleID, problemType) {
+    const url = `/api/${userGoogleID}/${problemType}`;
     console.log(url);
     return axios.get(url);
   },
-  getFacts: function (type) {
-    return axios.get(`/api/facts/${type}`);
+  getProblemsByType: function (problemType) {
+    return axios.get(`/api/${problemType}`);
   },
-  setLearnerFact: function (problem) {
-    return axios.put(`/api/${problem.learner_id}/facts`, problem);
+  updateLearnerProblemStats: function (problemType, problem) {
+    console.log(problem);
+    return axios.put(`/api/${problem.learner_id}/${problemType}`, problem);
   },
-  getLearnerFactsStats: function (userGoogleID, type) {
+  getLearnerStats: function (userGoogleID, problemType) {
     console.log("getLearnerFactsStats called");
-    return axios.get(`/api/${userGoogleID}/facts/${type}/stats`);
+    return axios.get(`/api/${userGoogleID}/${problemType}/stats`);
   }/*,
   // Saves an article to the database
   saveArticle: function (articleData) {
