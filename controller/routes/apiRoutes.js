@@ -48,7 +48,10 @@ module.exports = function (app) {
         console.log("updateLearnerProblemStats() called");
         console.log(req.body);
         orm.updateLearnerProblemStats(req.body)
-            .then((data) => { return res.json(data); })
+            .then((data) => { 
+                //console.log(data); 
+                return res.json(data); 
+            })
             .catch((error) => {
                 console.log(error);
                 return res.json(error);
@@ -60,7 +63,7 @@ module.exports = function (app) {
         console.log(req.params.problemType);
         orm.getLearnerStats(req.params.learner, req.params.problemType)
             .then((data) => {
-                //console.log(data);
+                console.log(data);
                 return res.json(data);
             })
             .catch((error) => {

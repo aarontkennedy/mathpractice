@@ -12,10 +12,17 @@
     flex: 1 0 auto;
 }
 
-.Home-Content {
+.Game section {
     flex: 1 0 auto; /* Use 1 0 auto instead of just 1 for backwards compatibility with other browsers */
 }
 
-.Game section {
-    flex: 1 0 auto; /* Use 1 0 auto instead of just 1 for backwards compatibility with other browsers */
+.GameStartButton {
+    width: 200px;
+    font-size: 250%;
+    min-width: fit-content;
+    margin-top: 2rem;
+}
+
+.workHard {
+    max-height: 300px;
 }

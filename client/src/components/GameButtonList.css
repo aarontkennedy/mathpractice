@@ -7,12 +7,3 @@
     list-style: none;
     padding: .3rem;
 }
-
-@media only screen and (max-width: 600px) {
-    .GameButtonList li {
-        padding: .1rem;
-    }
-    .GameButtonList a {
-        padding: .5rem;
-    }
-}

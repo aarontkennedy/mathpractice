@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import './App.css';
 import Home from "./components/pages/Home";
 import FactsPractice from "./components/pages/FactsPractice";
 import IntegersPractice from "./components/pages/IntegersPractice";
 import PrivateRoute from "./components/PrivateRoute";
 import callServer from "./utils/callServer";
-import Header from "./components/Header";
 
 class App extends Component {
 
@@ -58,23 +57,23 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <Header
-            userID={this.state.googleID}
-            signOut={this.signOut} />
           <Switch>
             <PrivateRoute exact path="/game/facts"
               component={FactsPractice}
               userID={this.state.googleID}
+              signOut={this.signOut}
             />
             <PrivateRoute exact path="/game/integers"
               component={IntegersPractice}
               userID={this.state.googleID}
+              signOut={this.signOut}
             />
             <Route exact path="/signin"
               render={(props) => <Home {...props}
                 userID={this.state.googleID}
                 onSuccess={this.successfulSignIn}
                 onFailure={this.unsuccessfulSignIn}
+                signOut={this.signOut}
                 message="Please Sign in to ..."
               />} />
             <Route exact path="/"
@@ -82,6 +81,7 @@ class App extends Component {
                 userID={this.state.googleID}
                 onSuccess={this.successfulSignIn}
                 onFailure={this.unsuccessfulSignIn}
+                signOut={this.signOut}
                 message=""
               />} />
           </Switch>

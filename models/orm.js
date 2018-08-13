@@ -57,7 +57,10 @@ SELECT ${problemType}.*, problemStats.*  FROM learners
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id
 INNER JOIN ${problemType} ON problemStats.problem_id= ${problemType}.problem
 WHERE learners.google_id = ?
-ORDER BY ${problemType}.type, problemStats.streak, ${problemType}.ease LIMIT 20;`;
+ORDER BY problemStats.correct/problemStats.attempts,
+${problemType}.type, 
+problemStats.streak, 
+${problemType}.ease LIMIT 20;`;
 
         return performDatabaseCall(queryString, [learnerID]);
     },
@@ -86,9 +89,10 @@ WHERE problem_id=? AND learner_id=?;`;
     getLearnerStats: function (learnerID, problemType) {
         verifyProblemTypeTableName(problemType);
 
+/*      SUM(problemStats.attempts) as totalAttempts, 
+        SUM(problemStats.correct) as totalCorrect, */
+
         var queryString = `SELECT ${problemType}.type,
-SUM(problemStats.attempts) as totalAttempts, 
-SUM(problemStats.correct) as totalCorrect, 
 ROUND(AVG(problemStats.correct/problemStats.attempts)*100,1) as averageProficiencyPercent 
 FROM learners 
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id 

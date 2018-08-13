@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import './Game.css';
-import BigGameStartButton from "../BigGameStartButton";
 import GameDisplay from "../GameDisplay";
 import AudioControl from "../../utils/AudioControl";
 import callServer from "../../utils/callServer";
+import BarChart from "../barChart/BarChart";
+import Header from "../Header";
+import Giphy from "../giphy/Giphy";
 
 class Game extends Component {
 
@@ -28,7 +30,7 @@ class Game extends Component {
         callServer.getLearnerStats(this.props.userID, this.props.problemType)
             .then((data) => {
                 console.log(data);
-                this.setState({ proficiency: data.data[0] });
+                this.setState({ proficiency: data.data });
             });
     }
 
@@ -58,20 +60,55 @@ class Game extends Component {
         this.audio.stop();
     }
 
-    render() {
-        return (
-            <div className="Game">
-                {!this.state.isGameStarted ?
-                    <div>
-                        Current {this.capitalizeFirstLetter(this.props.problemType)}  Proficiency:
-                        {/*this.state.proficiency.averageProficiencyPercent*/}
-                        <BigGameStartButton onClick={this.handleStartGameClick} />
+    renderGameStart() {
+        return (<div className="Game">
+            <Header
+                userID={this.props.userID}
+                signOut={this.props.signOut} />
+
+            <section className="grid-container">
+                <div className="grid-x grid-padding-x grid-margin-x">
+                    <div className="cell medium-6 text-center" >
+                        <button type="button" className="button GameStartButton" onClick={this.handleStartGameClick}>Start!</button>
                     </div>
-                    : <GameDisplay problemType={this.props.problemType}
-                        problems={this.state.problems}
-                        handleGameIsDone={this.handleGameIsDone} />}
-            </div>
-        );
+
+                    <div className="show-for-medium medium-6 text-center">
+                        <Giphy search="get to work" class="workHard"/>
+                    </div>
+
+                    <div className="cell text-center">
+                        {this.state.proficiency ?
+                            <BarChart title={`Current ${this.capitalizeFirstLetter(this.props.problemType)}  Proficiency`}
+                                data={this.state.proficiency} /> : ""
+                        }
+                    </div>
+                </div>
+            </section>
+        </div>);
+    }
+
+    renderActualGame() {
+        return (<div className="Game">
+            <Header
+                userID={this.props.userID}
+                signOut={this.props.signOut} />
+
+            <GameDisplay problemType={this.props.problemType}
+                problems={this.state.problems}
+                handleGameIsDone={this.handleGameIsDone} />
+        </div>);
+    }
+
+    render() {
+
+        if (!this.props.signOut) {
+            throw new Error("Game: signOut is null.");
+        }
+
+        if (this.state.isGameStarted) {
+            return this.renderActualGame();
+        }
+        return this.renderGameStart();
     }
 
 }

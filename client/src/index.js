@@ -11,8 +11,8 @@ import registerServiceWorker from './registerServiceWorker';
 
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus, faMinus, faTimes, faDivide, faDice} from '@fortawesome/free-solid-svg-icons';
-library.add(faPlus, faMinus, faTimes, faDivide, faDice);
+import { faPlus, faMinus, faTimes, faDivide, faDice, faBrain} from '@fortawesome/free-solid-svg-icons';
+library.add(faPlus, faMinus, faTimes, faDivide, faDice, faBrain);
 
 
 ReactDOM.render(<App />, document.getElementById('root'));
