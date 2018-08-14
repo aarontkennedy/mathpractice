@@ -36,7 +36,7 @@ const orm = {
     getTopicStatistics: () => {},*/
     upsertLearner: function (profileObj) {
         let queryString = `
-INSERT INTO learners VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+INSERT INTO learners VALUES (?, ?, ?, ?, ?, 0, NOW(), NOW())
 ON DUPLICATE KEY UPDATE first=?, last=?, email=?, imageURL=?, last_visit=NOW();`
         return performDatabaseCall(queryString,
             [profileObj.googleID,

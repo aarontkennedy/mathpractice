@@ -13,6 +13,7 @@ class FactsPractice extends Component {
             <Game problemType="facts"
                 userID={this.props.userID}
                 signOut={this.props.signOut}
+                timeout={10}
             />
         );
     }

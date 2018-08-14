@@ -9,14 +9,28 @@
 .Go-Button {
     font-weight: bolder;
     border-radius: .1rem;
+    height: 5rem;
+    vertical-align: bottom;
+}
+
+.TextInput {
+    display: inline-block;
+    height: 5rem;
+    font-size: 3rem;
+    font-weight: bold;
+    width: 10rem;
+    margin-top: 1rem;
+    color: transparent;
+    text-shadow: 0 0 0 black;
 }
 
 @media only screen and (max-width: 600px) {
-    .GameDisplay {
-        margin-top: .1rem;
+    .TextInput {
+        height: 4rem;
+        font-size: 2rem;
+        width: 5rem;
     }
     .Go-Button {
-        font-size:90%;
-        padding: .5rem 1.5rem;
+        height: 4rem;
     }
 }

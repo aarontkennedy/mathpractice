@@ -44,10 +44,12 @@ class GameDisplay extends Component {
                 showCurrentProblemSolution: false
             });
 
-            this.timeoutID = setTimeout(()=> {
-                this.handleCheckAnswer(null, true);
-            }, 5000);
-            
+            if (this.props.timeout > 0) {
+                this.timeoutID = setTimeout(() => {
+                    this.handleCheckAnswer(null, true);
+                }, this.props.timeout * 1000);
+            }
+
         }
         else {
             console.log("game over - no more problems");
@@ -133,27 +135,25 @@ class GameDisplay extends Component {
 
     render() {
         return (
-            <div className="GameDisplay row grid-x">
-                <div className="cell medium-6 columns">
-                    <div className="row grid-x">
+            <div className="GameDisplay grid-x">
+                <div className="cell medium-6 text-center">
 
-                        {this.state.showCurrentProblemSolution ? 
-                        <ShowProblemSolution 
-                        problem={this.state.currentProblem}
-                        handleNextProblemClick={this.nextProblem} />
+                    {this.state.showCurrentProblemSolution ?
+                        <ShowProblemSolution
+                            problem={this.state.currentProblem}
+                            handleNextProblemClick={this.nextProblem} />
                         :
-                            <div className="cell columns text-center">
-                                {this.state.currentProblem ?
-                                    <Problem problem={this.state.currentProblem.problem} /> : ""}
-                                <TextInput value={this.state.textInput} handleKeyPress={this.handleKeyPress} />
-                                <button type="button" className="button large success Go-Button" onClick={this.handleCheckAnswer}>Go!</button>
-                            </div>
-                        }
+                        <div className="text-center">
+                            {this.state.currentProblem ?
+                                <Problem problem={this.state.currentProblem.problem} /> : ""}
+                            <TextInput value={this.state.textInput} handleKeyPress={this.handleKeyPress} />
+                            <button type="button" className="button large success Go-Button" onClick={this.handleCheckAnswer}>Go!</button>
+                        </div>
+                    }
 
-                    </div>
                 </div>
 
-                <div className="cell medium-6 columns text-center">
+                <div className="cell medium-6 text-center">
                     <CalculatorInput onClick={this.handleCalcClick} />
                 </div>
             </div>

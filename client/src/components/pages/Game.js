@@ -73,7 +73,7 @@ class Game extends Component {
                     </div>
 
                     <div className="show-for-medium medium-6 text-center">
-                        <Giphy search="get to work" class="workHard"/>
+                        <Giphy search="you can do it" class="workHard" />
                     </div>
 
                     <div className="cell text-center">
@@ -95,7 +95,8 @@ class Game extends Component {
 
             <GameDisplay problemType={this.props.problemType}
                 problems={this.state.problems}
-                handleGameIsDone={this.handleGameIsDone} />
+                handleGameIsDone={this.handleGameIsDone}
+                timeout={this.props.timeout} />
         </div>);
     }
 

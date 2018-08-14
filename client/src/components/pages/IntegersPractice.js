@@ -12,7 +12,8 @@ class IntegersPractice extends Component {
         return (
             <Game problemType="integers"
                 userID={this.props.userID}
-                signOut={this.props.signOut} />
+                signOut={this.props.signOut} 
+                timeout={10} />
         );
     }
 
