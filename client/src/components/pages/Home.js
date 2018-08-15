@@ -4,6 +4,7 @@ import Footer from "../Footer";
 import GameButtonList from "../GameButtonList";
 import { GoogleLogin } from 'react-google-login';
 import Header from "../Header";
+import Advert from "../Advert";
 import Giphy from "../giphy/Giphy";
 
 class Home extends Component {
@@ -47,7 +48,25 @@ class Home extends Component {
                             <Giphy search="you can do it" />
                             <h4>Work Hard! You can do it!</h4>
                         </div>
+
+                        <div className="cell advertising-section">
+                            <div className="grid-x grid-padding-x grid-margin-x">
+                                <div className="cell medium-6">
+                                    <Advert image="/images/hotTator.gif"
+                                        url="https://hotmathtator.herokuapp.com"
+                                        title="Hot Mathtator!"
+                                        description="Want to practice math facts with friends?  Play Hot Mathtator!" />
+                                </div>
+                                <div className="cell medium-6">
+                                    <Advert image="/images/brainReact.png"
+                                        url="https://brainreact.herokuapp.com"
+                                        title="BrainReact"
+                                        description="Want to practice to increase your memory?  Play one of BrainReacts various levels and see how much you can remember!" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </section>
 
                 <Footer />

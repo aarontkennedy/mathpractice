@@ -1,0 +1,14 @@
+.Advert {
+    margin: 2rem auto 1rem auto;
+    background-color: rgb(221, 243, 250);
+    border-radius: .25rem;
+    padding-top: .5rem;
+    color: rgb(50, 50, 50);
+    font-size:90%;
+}
+
+.Advert-icon {
+    width:75px;
+    border-radius: 1rem;
+    vertical-align: middle;
+}
