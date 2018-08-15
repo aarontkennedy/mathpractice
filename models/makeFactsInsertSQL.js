@@ -2,16 +2,29 @@
 var fs = require("fs");
 
 // This block of code will create an empty file.
-fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
+fs.writeFile("factsInsert.sql", "", function (err) {
 
     // If the code experiences any errors it will log the error to the console.
     if (err) {
         return console.log(err);
     }
 
+/*
+CREATE TABLE problems (
+	`problem` VARCHAR(200) NOT NULL PRIMARY KEY,
+    `image` VARCHAR(200) DEFAULT "",
+	`ease` INT NOT NULL DEFAULT 0, 
+	`solution` INT NOT NULL,
+    `category` VARCHAR(50),
+	`type` VARCHAR(25),
+	FOREIGN KEY (`category`) REFERENCES problemCategories(`category`),
+	FOREIGN KEY (`type`) REFERENCES problemSubTypes(`type`)
+);
+*/
+
     let insert = "USE mathpractice_db;\n";
-    insert += "INSERT INTO facts ";
-    insert += "(`problem`, `type`, `ease`, `left`, `right`, `solution`)\n";
+    insert += "INSERT INTO problems ";
+    insert += "(`problem`, `image`, `ease`, `solution`, `category`, `type`)\n";
     insert += "VALUES";
 
     let addition = "";
@@ -26,7 +39,7 @@ fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
                 ease = 1;
             }
             const problem = `${i} + ${j} = `;
-            addition += `\n("${problem}", "addition", ${ease}, ${i}, ${j}, ${i + j}),`;
+            addition += `\n("${problem}", "", ${ease}, ${i + j}, "facts", "addition"),`;
         }
     }
 
@@ -42,7 +55,7 @@ fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
                 ease = 1;
             }
             const problem = `${i} - ${j} = `;
-            subtraction += `\n("${problem}", "subtraction", ${ease}, ${i}, ${j}, ${i - j}),`;
+            subtraction += `\n("${problem}", "", ${ease}, ${i - j}, "facts", "subtraction"),`;
         }
     }
 
@@ -58,7 +71,7 @@ fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
                 ease = 1;
             }
             const problem = `${i} x ${j} = `;
-            multiplication += `\n("${problem}", "multiplication", ${ease}, ${i}, ${j}, ${i * j}),`;
+            multiplication += `\n("${problem}", "", ${ease}, ${i * j}, "facts", "multiplication"),`;
         }
     }
 
@@ -75,13 +88,13 @@ fs.writeFile("basicMathFactsInsert.sql", "", function (err) {
             }
             const dividend = divisor * solution;
             const problem = `${dividend} ÷ ${divisor} = `;
-            division += `\n("${problem}", "division", ${ease}, ${dividend}, ${divisor}, ${solution}),`;
+            division += `\n("${problem}", "", ${ease}, ${solution}, "facts", "division"),`;
         }
     }
 
     division = division.slice(0, -1) + ";";
 
-    fs.appendFile("basicMathFactsInsert.sql",
+    fs.appendFile("factsInsert.sql",
         insert + addition + subtraction + multiplication + division,
         function (err) {
 

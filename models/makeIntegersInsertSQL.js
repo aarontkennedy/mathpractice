@@ -2,30 +2,49 @@
 var fs = require("fs");
 
 // This block of code will create an empty file.
-fs.writeFile("integerFactsInsert.sql", "", function (err) {
+fs.writeFile("integersInsert.sql", "", function (err) {
 
     // If the code experiences any errors it will log the error to the console.
     if (err) {
         return console.log(err);
     }
 
+    /*
+    CREATE TABLE problems (
+        `problem` VARCHAR(200) NOT NULL PRIMARY KEY,
+        `image` VARCHAR(200) DEFAULT "",
+        `ease` INT NOT NULL DEFAULT 0, 
+        `solution` INT NOT NULL,
+        `category` VARCHAR(50),
+        `type` VARCHAR(25),
+        FOREIGN KEY (`category`) REFERENCES problemCategories(`category`),
+        FOREIGN KEY (`type`) REFERENCES problemSubTypes(`type`)
+    );
+    */
+
     let insert = "USE mathpractice_db;\n";
-    insert += "INSERT INTO integers ";
-    insert += "(`problem`, `type`, `ease`, `left`, `right`, `samesigns`, `solution`)\n";
+    insert += "INSERT INTO problems ";
+    insert += "(`problem`, `image`, `ease`, `solution`, `category`, `type`)\n";
     insert += "VALUES";
 
     let addition = "";
     // create addition problems to insert
     for (let i = -10; i < 11; i++) {
         for (let j = -10; j < 11; j++) {
-            const samesigns = (i > 0 && j > 0) || (i < 0 && j < 0);
-            let ease = 1;
-            if (!samesigns) {
-                ease = 2;
+            let ease = 2;
+            if (i >= 0 && j >= 0) {  // let's skip p + p and focus on negs
+                continue;
             }
+            else if (i === 0 || j === 0) {
+                ease = 0;
+            }
+            else if (i < 0 && j < 0) {
+                ease = 1;
+            }
+
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} + ${right} = `;
-            addition += `\n("${problem}", "addition", ${ease}, ${i}, ${j}, ${samesigns}, ${i + j}),`;
+            addition += `\n("${problem}", "", ${ease}, ${i + j}, "integers", "addition"),`;
         }
     }
 
@@ -33,14 +52,19 @@ fs.writeFile("integerFactsInsert.sql", "", function (err) {
     // create subtraction problems to insert
     for (let i = -10; i < 11; i++) {
         for (let j = -10; j < 11; j++) {
-            const samesigns = (i > 0 && j > 0) || (i < 0 && j < 0);
-            let ease = 1;
-            if (!samesigns) {
-                ease = 2;
+            if (i >= 0 && j >= 0) {  // let's skip p * p and focus on negs
+                continue;
+            }
+            let ease = 2;
+            if (i === 0 || j === 0) {
+                ease = 0;
+            }
+            else if (j > 0) {
+                ease = 1;
             }
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} - ${right} = `;
-            subtraction += `\n("${problem}", "subtraction", ${ease}, ${i}, ${j}, ${samesigns}, ${i - j}),`;
+            subtraction += `\n("${problem}", "", ${ease}, ${i - j}, "integers", "subtraction"),`;
         }
     }
 
@@ -48,17 +72,20 @@ fs.writeFile("integerFactsInsert.sql", "", function (err) {
     // create multiplication problems to insert
     for (let i = -10; i < 11; i++) {
         for (let j = -10; j < 11; j++) {
-            const samesigns = (i > 0 && j > 0) || (i < 0 && j < 0);
-            let ease = 0;
-            if (!samesigns) {
-                ease = 1;
+            if (i >= 0 && j >= 0) {  // let's skip p * p and focus on negs
+                continue;
             }
-            else if (i > 0 && j > 0) {
+            let ease = 0;
+            if (i < 0 && j < 0) {
                 ease = 2;
             }
+            else if (i != 0 && j != 0) {
+                ease = 1;
+            }
+
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} x ${right} = `;
-            multiplication += `\n("${problem}", "multiplication", ${ease}, ${i}, ${j}, ${samesigns}, ${i * j}),`;
+            multiplication += `\n("${problem}", "", ${ease}, ${i * j}, "integers", "multiplication"),`;
         }
     }
 
@@ -69,23 +96,27 @@ fs.writeFile("integerFactsInsert.sql", "", function (err) {
             if (!divisor) continue; // no division by 0?
 
             const dividend = divisor * solution;
-            const samesigns = (dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0);
-            let ease = 0;
-            if (!samesigns) {
-                ease = 1;
+
+            if (dividend >= 0 && divisor >= 0) {  // let's skip p * p and focus on negs
+                continue;
             }
-            else if (dividend > 0 && divisor > 0) {
+
+            let ease = 1;
+            if (dividend === 0) {
+                ease = 0;
+            }
+            else if (dividend < 0 && divisor < 0) {
                 ease = 2;
             }
             const right = (divisor < 0) ? `(${divisor})` : divisor;
             const problem = `${dividend} ÷ ${right} = `;
-            division += `\n("${problem}", "division", ${ease}, ${dividend}, ${divisor}, ${samesigns}, ${solution}),`;
+            division += `\n("${problem}", "", ${ease}, ${solution}, "integers", "division"),`;
         }
     }
 
     division = division.slice(0, -1) + ";";
 
-    fs.appendFile("integerFactsInsert.sql",
+    fs.appendFile("integersInsert.sql",
         insert + addition + subtraction + multiplication + division,
         function (err) {
 

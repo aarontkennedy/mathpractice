@@ -22,12 +22,6 @@ function performDatabaseCall(queryStr, parameters = null) {
     });
 }
 
-function verifyProblemTypeTableName(problemType) {
-    if (problemType != "facts" && problemType != "integers") {
-        throw new Error("verifyProblemTypeTableName() Bad problemType="+problemType);
-    }
-}
-
 const orm = {
     /*
     resetTopicQuestions:  () => {},
@@ -36,7 +30,7 @@ const orm = {
     getTopicStatistics: () => {},*/
     upsertLearner: function (profileObj) {
         let queryString = `
-INSERT INTO learners VALUES (?, ?, ?, ?, ?, 0, NOW(), NOW())
+INSERT INTO learners VALUES (?, ?, ?, ?, ?, NOW(), NOW())
 ON DUPLICATE KEY UPDATE first=?, last=?, email=?, imageURL=?, last_visit=NOW();`
         return performDatabaseCall(queryString,
             [profileObj.googleID,
@@ -50,122 +44,54 @@ ON DUPLICATE KEY UPDATE first=?, last=?, email=?, imageURL=?, last_visit=NOW();`
             profileObj.imageURL]);
     },
 
-    getLearnersProblems: function (learnerID, problemType) {
-        verifyProblemTypeTableName(problemType);
+    getLearnersProblems: function (learnerID, problemCategory) {
         var queryString = `
-SELECT ${problemType}.*, problemStats.*  FROM learners
+SELECT problems.*, problemStats.*, problemSubTypes.* FROM learners
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id
-INNER JOIN ${problemType} ON problemStats.problem_id= ${problemType}.problem
-WHERE learners.google_id = ?
+INNER JOIN problems ON problemStats.problem_id= problems.problem
+INNER JOIN problemSubTypes ON problemSubTypes.type= problems.type 
+WHERE learners.google_id =? AND problems.category=?
 ORDER BY problemStats.correct/problemStats.attempts,
-${problemType}.type, 
+problemSubTypes.difficulty, 
 problemStats.streak, 
-${problemType}.ease LIMIT 20;`;
+problems.ease LIMIT 20;`;
 
-        return performDatabaseCall(queryString, [learnerID]);
+        return performDatabaseCall(queryString, [learnerID, problemCategory]);
     },
 
-    createLearnerFacts: function (learnerID, problemType) {
-        verifyProblemTypeTableName(problemType);
+    createLearnerFacts: function (learnerID, problemCategory) {
         let q = `
-INSERT INTO problemStats (learner_id, problem_id) 
-SELECT ?, problem FROM ${problemType};`;
+        INSERT INTO problemStats (learner_id, problem_id)
+        SELECT ?, problem FROM problems WHERE problems.category=?;`;
 
-        return performDatabaseCall(q, [learnerID]);
+        return performDatabaseCall(q, [learnerID, problemCategory]);
     },
 
-    updateLearnerProblemStats: function (factProblem) {
+    updateLearnerProblemStats: function (problemStats) {
         let query = `
 UPDATE problemStats
 SET attempts=?, correct=?, streak=?, last_update=NOW()
 WHERE problem_id=? AND learner_id=?;`;
         return performDatabaseCall(query,
-            [factProblem.attempts,
-            factProblem.correct,
-            factProblem.streak,
-            factProblem.problem_id,
-            factProblem.learner_id]);
+            [problemStats.attempts,
+            problemStats.correct,
+            problemStats.streak,
+            problemStats.problem_id,
+            problemStats.learner_id]);
     },
-    getLearnerStats: function (learnerID, problemType) {
-        verifyProblemTypeTableName(problemType);
+    getLearnerStats: function (learnerID, problemCategory) {
 
-/*      SUM(problemStats.attempts) as totalAttempts, 
-        SUM(problemStats.correct) as totalCorrect, */
-
-        var queryString = `SELECT ${problemType}.type,
-ROUND(AVG(problemStats.correct/problemStats.attempts)*100,1) as averageProficiencyPercent 
+        var queryString = `
+SELECT problems.type,
+AVG(problemStats.correct/problemStats.attempts) AS averageProficiencyPercent, 
+SUM(IF(problemStats.attempts > 0, 1, 0))/COUNT(*) AS percentAttempted
 FROM learners 
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id 
-INNER JOIN ${problemType} ON problemStats.problem_id= ${problemType}.problem 
-WHERE learners.google_id = ? GROUP BY ${problemType}.type; `;
+INNER JOIN problems ON problemStats.problem_id= problems.problem 
+WHERE learners.google_id = ? AND problems.category = ? GROUP BY problems.type;`;
 
-        return performDatabaseCall(queryString, [learnerID]);
+        return performDatabaseCall(queryString, [learnerID,problemCategory]);
     }
-
-
-
-    /*searchBurgerName: function (textInput, callback) {
-        const queryString = `SELECT * FROM burgers WHERE name LIKE ? LIMIT 5;`;
-        performDatabaseCall(queryString, ["%" + textInput + "%"], callback);
-    },
-    getBurgers: function (callback, limit = -1) {
-        var queryString = "SELECT * FROM burgers ORDER BY name";
-        if (limit > 0) {
-            queryString += " LIMIT " + limit;
-        }
-        queryString += ";";
-        performDatabaseCall(queryString, callback);
-    },
-    addBurger: function (name, description, callback) {
-        var queryString =
-            "INSERT INTO burgers (`name`, `description`) VALUES (?, ?);";
-        performDatabaseCall(queryString, [name, description], callback);
-    },
-    addEater: function (id, name, callback) {
-        var queryString =
-            'INSERT INTO eaters (`google_id`, `name`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `name`=?;';
-
-        performDatabaseCall(queryString, [id, name, name], callback);
-    },
-    getEater: function (id, callback) {
-        var queryString = 'SELECT * FROM eaters WHERE google_id LIKE ?';
-        performDatabaseCall(queryString, [id], callback);
-    },
-    addBurgerEaten: function (eaterID, burgerID, burgerRating, callback) {
-        var queryString =
-            'INSERT INTO burgersEaten (`eater_id`, `burger_id`, `rating`) VALUES (?, ?, ?)';
-        performDatabaseCall(queryString, [eaterID, burgerID, burgerRating], callback);
-    },
-    getBurgersEaten: function (eaterID, callback) {
-        var queryString = `SELECT burgers.name AS burgerName,
-            rating AS burgerRating, 
-            DATE_FORMAT(date, "%m/%d/%Y") AS burgerDate
-            FROM burgers
-            INNER JOIN burgersEaten
-            ON burgers.id = burgersEaten.burger_id
-            INNER JOIN eaters
-            ON eaters.google_id = ?
-            ORDER BY burgerDate DESC;`;
-        performDatabaseCall(queryString, [eaterID], callback);
-
-    },
-    getBurgersEatenDifferentCount: function (eaterID, callback) {
-        var queryString = `SELECT burgers.name AS burgerName, COUNT(*) AS burgerCount
-            FROM burgers
-            INNER JOIN burgersEaten
-            ON burgers.id = burgersEaten.burger_id
-            INNER JOIN eaters
-            ON eaters.google_id = ?
-            GROUP BY burgerName;`;
-
-        performDatabaseCall(queryString, [eaterID], callback);
-    },
-    getRowCountAllTables: function (callback) {
-        var queryString = "SELECT TABLE_NAME, TABLE_ROWS ";
-        queryString += "FROM `information_schema`.`tables` " 
-        queryString += "WHERE `table_schema` = '"+databaseConnectionInfo.database+"';";
-        performDatabaseCall(queryString, callback);
-    }*/
 };
 
 module.exports = orm;

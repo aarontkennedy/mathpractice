@@ -12,7 +12,7 @@ class Game extends Component {
     state = {
         isGameStarted: false,
         problems: null,
-        proficiency: 0
+        progress: 0
     };
 
     componentDidMount() {
@@ -30,7 +30,17 @@ class Game extends Component {
         callServer.getLearnerStats(this.props.userID, this.props.problemType)
             .then((data) => {
                 console.log(data);
-                this.setState({ proficiency: data.data });
+                const massaged = data.data.map((obj) => {
+                    let app = obj.averageProficiencyPercent;
+                    app = app ? app : 0;
+                    const pa = obj.percentAttempted;
+
+                    const progress = Math.round(app*pa*100);
+                    
+                    return {type: obj.type, progress: progress};
+                });
+                console.log(massaged);
+                this.setState({ progress: massaged });
             });
     }
 
@@ -77,9 +87,9 @@ class Game extends Component {
                     </div>
 
                     <div className="cell text-center">
-                        {this.state.proficiency ?
-                            <BarChart title={`Current ${this.capitalizeFirstLetter(this.props.problemType)}  Proficiency`}
-                                data={this.state.proficiency} /> : ""
+                        {this.state.progress ?
+                            <BarChart title={`Current ${this.capitalizeFirstLetter(this.props.problemType)}  Progress`}
+                                data={this.state.progress} /> : ""
                         }
                     </div>
                 </div>

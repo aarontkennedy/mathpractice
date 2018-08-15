@@ -28,8 +28,8 @@ class BarChart extends Component {
             .append('rect')
             .classed('bar', true)
             .attr('x', d => xScale(d.type))
-            .attr('y', d => yScale(d.averageProficiencyPercent))
-            .attr('height', d => (height - yScale(d.averageProficiencyPercent)))
+            .attr('y', d => yScale(d.progress))
+            .attr('height', d => (height - yScale(d.progress)))
             .attr('width', d => xScale.bandwidth())
             .style('fill', (d, i) => colorScale(i));
 
@@ -40,9 +40,9 @@ class BarChart extends Component {
             .classed('bar-label', true)
             .attr('x', d => xScale(d.type) + xScale.bandwidth() / 2)
             .attr('dx', 0)
-            .attr('y', d => yScale(d.averageProficiencyPercent))
+            .attr('y', d => yScale(d.progress))
             .attr('dy', -6)
-            .text(d => d.averageProficiencyPercent)
+            .text(d => d.progress+"%")
 
         const xAxis = d3.axisBottom()
             .scale(xScale);
@@ -69,7 +69,7 @@ class BarChart extends Component {
             .attr('fill', '#000')
             .style('font-size', '1rem')
             .style('text-anchor', 'middle')
-            .text('Percent Proficient');
+            .text('Percent Progress');
 
         const yGridlines = d3.axisLeft()
             .scale(yScale)
