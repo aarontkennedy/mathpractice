@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Find Safe/Applicable Giphies</title>
+</head>
+
+<body>
+    <div id="results"></div>
+
+    <form id="myForm">
+
+        <button type="button" id="myClick">Generate List of Good Pics</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script> 
+        $(document).ready(() => {
+            let search = encodeURIComponent("encouragement");
+            let myKey = "MSfEV1eyHtNS3mXorDXyqTQ7JB6jY8Pi";
+            let queryURL = `https://api.giphy.com/v1/gifs/search?q=${search}&rating=g&limit=20&api_key=${myKey}`;
+
+            $.get(queryURL, (data) => {
+                console.log(data.data);
+                data.data.forEach((img) => {
+                    $("#myForm").append(`<div>
+                    <input type="checkbox" checked style="transform: scale(3);" />
+                    <img src="${img.images.original.url}" style="max-height: 150px; display: inline-block; vertical-align:middle;"/></div>`);
+                });
+            });
+
+            $("#myClick").click(() => {
+                let goodOnes = $("#myForm input:checked");
+                console.log();
+                goodOnes.each((index, input) => {
+                    console.log($(input));
+                    let url = $(input).parent().children("img").attr("src");
+                    $("#results").append(`("${url}"),<br>`);
+                });
+            });
+
+
+
+
+
+        });
+    </script>
+</body>
+
+</html>

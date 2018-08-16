@@ -81,6 +81,8 @@ class Game extends Component {
         return (<div className="Game">
             <Header
                 userID={this.props.userID}
+                firstName={this.props.firstName}
+                imageURL={this.props.imageURL}
                 signOut={this.props.signOut} />
 
             <section className="grid-container">
@@ -90,7 +92,7 @@ class Game extends Component {
                     </div>
 
                     <div className="show-for-medium medium-6 text-center">
-                        <Giphy search="you can do it" class="workHard" />
+                        <Giphy search="you can do it" />
                     </div>
 
                     <div className="cell text-center">
@@ -108,6 +110,8 @@ class Game extends Component {
         return (<div className="Game">
             <Header
                 userID={this.props.userID}
+                firstName={this.props.firstName}
+                imageURL={this.props.imageURL}
                 signOut={this.props.signOut} />
 
             <GameDisplay problemType={this.props.problemType}

@@ -74,4 +74,17 @@ module.exports = function (app) {
             });
     });
 
+    app.get("/api/image", function (req, res) {
+        console.log("getRandomSupportImage() called");
+        orm.getRandomSupportImage()
+            .then((data) => {
+                console.log(data);
+                return res.json(data);
+            })
+            .catch((error) => {
+                console.log(error);
+                return res.json(error);
+            });
+    });
+
 };

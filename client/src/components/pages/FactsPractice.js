@@ -96,6 +96,8 @@ class FactsPractice extends Component {
         return (
             <Game problemType="facts"
                 userID={this.props.userID}
+                firstName={this.props.firstName}
+                imageURL={this.props.imageURL}
                 signOut={this.props.signOut}
                 timeout={10}
                 problemsPerRound={20}

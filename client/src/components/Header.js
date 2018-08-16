@@ -12,20 +12,31 @@ class Header extends Component {
 
     return (
       <header className="grid-x grid-padding-x">
-        <h3 className="small-6">
+        <h3 className="small-4">
           <Link to="/" className="Header-title" >Mathing</Link>
 
         </h3>
-        <div className="small-6 text-right">
+        <div className="small-8 text-right">
           {this.props.userID ?
             <div>
+              {/*
+              {this.props.firstName ?
+              <span className="show-for-large-up Header-greeting">Welcome, {this.props.firstName}. </span>
+              : "" }
+              */}
+
               <Link to="/"><FontAwesomeIcon className="Header-homeicon" icon="home" /></Link>
+
+              {this.props.imageURL ? 
+              <img className="Header-user-icon" alt={`User: ${this.props.firstName}`} src={this.props.imageURL} />
+              : ""}
+
               <GoogleLogout
                 className="button small"
                 buttonText="Sign Out"
                 onLogoutSuccess={this.props.signOut}
-              /> 
-              </div> : ""}
+              />
+            </div> : ""}
         </div>
       </header>);
   }

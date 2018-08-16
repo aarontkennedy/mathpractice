@@ -91,7 +91,15 @@ INNER JOIN problems ON problemStats.problem_id= problems.problem
 WHERE learners.google_id = ? AND problems.category = ? GROUP BY problems.type;`;
 
         return performDatabaseCall(queryString, [learnerID,problemCategory]);
+    },
+    getRandomSupportImage: function () {
+
+        var queryString = `SELECT inspirationalGiphies.url FROM inspirationalGiphies WHERE RAND()<=0.05 LIMIT 1;
+        `;
+
+        return performDatabaseCall(queryString, []);
     }
+
 };
 
 module.exports = orm;

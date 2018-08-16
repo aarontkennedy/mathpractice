@@ -13,6 +13,8 @@ class Home extends Component {
             <div className="Home">
                 <Header
                     userID={this.props.userID}
+                    firstName={this.props.firstName}
+                    imageURL={this.props.imageURL}
                     signOut={this.props.signOut} />
 
                 <section className="grid-container">

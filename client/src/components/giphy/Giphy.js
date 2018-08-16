@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './Giphy.css';
-import axios from "axios";
+//import axios from "axios";
+import callServer from "../../utils/callServer";
 
 class Giphy extends Component {
 
@@ -9,7 +10,7 @@ class Giphy extends Component {
     state = {
         imageURL: ""
     }
-
+/*
     componentDidMount() {
         console.log("Giphy:componentDidMount()");
         let search = encodeURIComponent(this.props.search);
@@ -30,12 +31,27 @@ class Giphy extends Component {
                 console.log("Giphy Error");
                 console.log(err)
             });
+    }*/
+
+    componentDidMount() {
+        console.log("Giphy:componentDidMount()");
+        callServer.getSupportImage()
+            .then((response) => {
+                /*console.log(response);
+                console.log(response.data);
+                console.log(response.data[0].url);*/
+                this.setState({ imageURL: response.data[0].url });
+            })
+            .catch((err) => {
+                console.log("Giphy Error");
+                console.log(err)
+            });
     }
 
     render() {
 
         if (this.state.imageURL) {
-            return (<img className={"Giphy "+this.props.class}
+            return (<img className="Giphy "
                 alt={this.props.search}
                 src={this.state.imageURL} />);
         }

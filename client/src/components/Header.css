@@ -14,3 +14,14 @@ header {
   font-size: 1.5rem;
 }
 
+.Header-user-icon {
+  margin-right: .25rem;
+  height: 2rem;
+  vertical-align: -.3rem;
+}
+
+.Header-greeting {
+  font-size: 80%;
+  color: rgb(29, 29, 29);
+}
+

@@ -38,9 +38,6 @@ fs.writeFile("integersInsert.sql", "", function (err) {
             else if (i === 0 || j === 0) {
                 ease = 0;
             }
-            else if (i < 0 && j < 0) {
-                ease = 1;
-            }
 
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} + ${right} = `;
@@ -56,11 +53,8 @@ fs.writeFile("integersInsert.sql", "", function (err) {
                 continue;
             }
             let ease = 2;
-            if (i === 0 || j === 0) {
+            if (j === 0) {
                 ease = 0;
-            }
-            else if (j > 0) {
-                ease = 1;
             }
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} - ${right} = `;
@@ -75,13 +69,7 @@ fs.writeFile("integersInsert.sql", "", function (err) {
             if (i >= 0 && j >= 0) {  // let's skip p * p and focus on negs
                 continue;
             }
-            let ease = 0;
-            if (i < 0 && j < 0) {
-                ease = 2;
-            }
-            else if (i != 0 && j != 0) {
-                ease = 1;
-            }
+            let ease = 1;
 
             const right = (j < 0) ? `(${j})` : j;
             const problem = `${i} x ${right} = `;
@@ -104,9 +92,6 @@ fs.writeFile("integersInsert.sql", "", function (err) {
             let ease = 1;
             if (dividend === 0) {
                 ease = 0;
-            }
-            else if (dividend < 0 && divisor < 0) {
-                ease = 2;
             }
             const right = (divisor < 0) ? `(${divisor})` : divisor;
             const problem = `${dividend} ÷ ${right} = `;

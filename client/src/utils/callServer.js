@@ -19,14 +19,10 @@ export default {
   getLearnerStats: function (userGoogleID, problemType) {
     console.log("getLearnerFactsStats called");
     return axios.get(`/api/${userGoogleID}/${problemType}/stats`);
-  }/*,
-  // Saves an article to the database
-  saveArticle: function (articleData) {
-    return axios.post("/api/user/article", articleData);
   },
-  // Deletes an article to the database
-  deleteArticle: function (articleData) {
-    console.log(articleData);
-    return axios.put("/api/user/article", articleData);
-  }*/
+  getSupportImage: function () {
+    console.log("getSupportImage called");
+    return axios.get(`/api/image`);
+  }
+  
 };
