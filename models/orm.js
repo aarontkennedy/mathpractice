@@ -44,7 +44,7 @@ ON DUPLICATE KEY UPDATE first=?, last=?, email=?, imageURL=?, last_visit=NOW();`
             profileObj.imageURL]);
     },
 
-    getLearnersProblems: function (learnerID, problemCategory) {
+    getLearnersProblems: function (learnerID, problemCategory, limit=20) {
         var queryString = `
 SELECT problems.*, problemStats.*, problemSubTypes.* FROM learners
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id
@@ -54,9 +54,9 @@ WHERE learners.google_id =? AND problems.category=?
 ORDER BY problemStats.correct/problemStats.attempts,
 problemSubTypes.difficulty, 
 problemStats.streak, 
-problems.ease LIMIT 20;`;
+problems.ease LIMIT ?;`;
 
-        return performDatabaseCall(queryString, [learnerID, problemCategory]);
+        return performDatabaseCall(queryString, [learnerID, problemCategory, limit]);
     },
 
     createLearnerFacts: function (learnerID, problemCategory) {

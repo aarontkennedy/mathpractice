@@ -11,9 +11,9 @@ class Advert extends Component {
                     </a>
                 </div>
                 <div className="cell auto">
-                    <h3>
+                    <h5>
                         <a href={this.props.url}>{this.props.title}</a>
-                    </h3>
+                    </h5>
                     <p>{this.props.description}</p>
                 </div>
             </div>);

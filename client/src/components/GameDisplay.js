@@ -141,6 +141,11 @@ class GameDisplay extends Component {
                     {this.state.showCurrentProblemSolution ?
                         <ShowProblemSolution
                             problem={this.state.currentProblem}
+                            problemSolutionHelp={() => {
+                                return (this.props.problemSolution(this.state.currentProblem.type,
+                                    this.state.currentProblem.problem,
+                                    this.state.currentProblem.solution));
+                            }}
                             handleNextProblemClick={this.nextProblem} />
                         :
                         <div className="text-center">

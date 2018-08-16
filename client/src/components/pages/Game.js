@@ -21,7 +21,10 @@ class Game extends Component {
         this.audio = new AudioControl("#gameSound");
         this.audio.setPlayList(["/songs/rootsSmall.mp3",
             "/songs/moveAndShakeSmall.mp3",
-            "/songs/thunderClapSmall.mp3"]);
+            "/songs/thunderClapSmall.mp3",
+            "/songs/haveWings.mp3",
+            "/songs/regulate.mp3",
+            "/songs/wantedAlive.mp3"]);
 
         this.updateLearnerStats();
     }
@@ -35,9 +38,9 @@ class Game extends Component {
                     app = app ? app : 0;
                     const pa = obj.percentAttempted;
 
-                    const progress = Math.round(app*pa*100);
-                    
-                    return {type: obj.type, progress: progress};
+                    const progress = Math.round(app * pa * 100);
+
+                    return { type: obj.type, progress: progress };
                 });
                 console.log(massaged);
                 this.setState({ progress: massaged });
@@ -47,10 +50,14 @@ class Game extends Component {
     handleStartGameClick = (event) => {
         this.audio.playRandomSong();
 
-        callServer.getLearnerProblems(this.props.userID, this.props.problemType)
+        callServer.getLearnerProblems(this.props.userID,
+            this.props.problemType)
             .then((res) => {
                 console.log("callServer.setUser succeeded");
                 console.log(res);
+                if (res.data.length > this.props.problemsPerRound) {
+                    res.data = res.data.slice(0, this.props.problemsPerRound);
+                }
                 this.setState({ problems: res.data, isGameStarted: true });
             })
             .catch((err) => { console.log(err) });  // database problem? create problems just for kicks?
@@ -106,7 +113,8 @@ class Game extends Component {
             <GameDisplay problemType={this.props.problemType}
                 problems={this.state.problems}
                 handleGameIsDone={this.handleGameIsDone}
-                timeout={this.props.timeout} />
+                timeout={this.props.timeout} 
+                problemSolution={this.props.problemSolution}/>
         </div>);
     }
 

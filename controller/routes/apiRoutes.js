@@ -28,7 +28,9 @@ module.exports = function (app) {
                     .then((data) => {
                         console.log("Created facts, now retrieving.");
                         console.log(data);
-                        return orm.getLearnersProblems(req.params.learner, req.params.category);
+                        return orm.getLearnersProblems(req.params.learner,
+                            req.params.category,
+                            req.params.limit);
                     })
                     .then((data) => {
                         return res.json(data);
@@ -48,9 +50,9 @@ module.exports = function (app) {
         console.log("updateLearnerProblemStats() called");
         console.log(req.body);
         orm.updateLearnerProblemStats(req.body)
-            .then((data) => { 
+            .then((data) => {
                 //console.log(data); 
-                return res.json(data); 
+                return res.json(data);
             })
             .catch((error) => {
                 console.log(error);
