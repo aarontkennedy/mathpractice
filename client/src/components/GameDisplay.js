@@ -15,7 +15,8 @@ class GameDisplay extends Component {
         isGameOver: false,
         textInput: "",
         currentProblem: null,
-        showCurrentProblemSolution: false
+        showCurrentProblemSolution: false,
+        incorrectAnswer: null
     };
 
     componentDidMount() {
@@ -41,7 +42,8 @@ class GameDisplay extends Component {
                 isGameOver: false,
                 textInput: "",
                 currentProblem: next,
-                showCurrentProblemSolution: false
+                showCurrentProblemSolution: false,
+                incorrectAnswer: null
             });
 
             if (this.props.timeout > 0) {
@@ -102,8 +104,9 @@ class GameDisplay extends Component {
         clearTimeout(this.timeoutID);
 
         let currentProblemCopy = this.state.currentProblem;
+        const theirAnswer = parseInt(this.state.textInput, 10);
         const correct = currentProblemCopy.solution ===
-            parseInt(this.state.textInput, 10);
+            theirAnswer;
 
         if (correct) {
             console.log("Correct!");
@@ -113,13 +116,17 @@ class GameDisplay extends Component {
             this.nextProblem();
         }
         else {
+            console.log(`${this.state.currentProblem.problem}${theirAnswer} was incorrect.`);
             currentProblemCopy.attempts++;
             currentProblemCopy.streak = 0;
             if (!currentProblemCopy.doneBefore) {
                 currentProblemCopy.doneBefore = true;
                 this.problems.unshift(currentProblemCopy);
             }
-            this.setState({ showCurrentProblemSolution: true });
+            this.setState({
+                showCurrentProblemSolution: true,
+                incorrectAnswer: theirAnswer
+            });
         }
         callServer.updateLearnerProblemStats(this.props.problemType, currentProblemCopy);
     }
@@ -141,6 +148,7 @@ class GameDisplay extends Component {
                     {this.state.showCurrentProblemSolution ?
                         <ShowProblemSolution
                             problem={this.state.currentProblem}
+                            incorrectAnswer={this.state.incorrectAnswer}
                             problemSolutionHelp={() => {
                                 return (this.props.problemSolution(this.state.currentProblem.type,
                                     this.state.currentProblem.problem,

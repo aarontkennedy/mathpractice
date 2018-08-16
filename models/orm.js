@@ -88,7 +88,10 @@ SUM(IF(problemStats.attempts > 0, 1, 0))/COUNT(*) AS percentAttempted
 FROM learners 
 INNER JOIN problemStats ON learners.google_id = problemStats.learner_id 
 INNER JOIN problems ON problemStats.problem_id= problems.problem 
-WHERE learners.google_id = ? AND problems.category = ? GROUP BY problems.type;`;
+INNER JOIN problemSubTypes ON problemSubTypes.type= problems.type
+WHERE learners.google_id = ? AND problems.category = ? 
+GROUP BY problems.type
+ORDER BY problemSubTypes.difficulty;`;
 
         return performDatabaseCall(queryString, [learnerID,problemCategory]);
     },
