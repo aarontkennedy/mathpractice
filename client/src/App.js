@@ -6,6 +6,7 @@ import FactsPractice from "./components/pages/FactsPractice";
 import IntegersPractice from "./components/pages/IntegersPractice";
 import PrivateRoute from "./components/PrivateRoute";
 import callServer from "./utils/callServer";
+import LocalProfileStorage from "./utils/LocalProfileStorage";
 
 class App extends Component {
 
@@ -16,6 +17,17 @@ class App extends Component {
     email: "",
     imageURL: ""
   };
+
+  componentDidMount() {
+    // retrieve from local storage if possible
+    this.localStorage = new LocalProfileStorage();
+    const alreadyLoggedInProfile = this.localStorage.retrieve();
+    if (alreadyLoggedInProfile) {
+      console.log("alreadyLoggedInProfile:");
+      console.log(alreadyLoggedInProfile);
+      this.setState(alreadyLoggedInProfile);
+    }
+  }
 
   successfulSignIn = (response) => {
     console.log(response);
@@ -28,13 +40,13 @@ class App extends Component {
       imageURL: response.profileObj.imageUrl
     }
     this.setState(profile);
+    this.localStorage.add(profile);
     callServer.setLearner(profile)
     .then((res)=>{console.log("callServer.setLearner succeeded");})
     .catch((err)=>{console.log(err)});
   }
 
   unsuccessfulSignIn = (response) => {
-    alert("unsuccessfulSignIn");
     console.log(response);
 
     // what else should I do? 
@@ -51,6 +63,8 @@ class App extends Component {
       email: "",
       imageURL: ""
     });
+    // remove form local storage
+    this.localStorage.remove();
   }
 
   render() {
