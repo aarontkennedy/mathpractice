@@ -12,8 +12,8 @@ class App extends Component {
 
   state = {
     googleID: "",
-    firstName: "",
-    lastName: "",
+    first: "",
+    last: "",
     email: "",
     imageURL: ""
   };
@@ -34,8 +34,8 @@ class App extends Component {
     console.log(response.profileObj);
     let profile = {
       googleID: response.profileObj.googleId,
-      firstName: response.profileObj.givenName,
-      lastName: response.profileObj.familyName,
+      first: response.profileObj.givenName,
+      last: response.profileObj.familyName,
       email: response.profileObj.email,
       imageURL: response.profileObj.imageUrl
     }
@@ -58,8 +58,8 @@ class App extends Component {
     this.setState({
       signedIn: false,
       googleID: "",
-      firstName: "",
-      lastName: "",
+      first: "",
+      last: "",
       email: "",
       imageURL: ""
     });
@@ -75,21 +75,21 @@ class App extends Component {
             <PrivateRoute exact path="/game/facts"
               component={FactsPractice}
               userID={this.state.googleID}
-              firstName={this.state.firstName}
+              first={this.state.first}
               imageURL={this.state.imageURL}
               signOut={this.signOut}
             />
             <PrivateRoute exact path="/game/integers"
               component={IntegersPractice}
               userID={this.state.googleID}
-              firstName={this.state.firstName}
+              first={this.state.first}
               imageURL={this.state.imageURL}
               signOut={this.signOut}
             />
             <Route exact path="/signin"
               render={(props) => <Home {...props}
                 userID={this.state.googleID}
-                firstName={this.state.firstName}
+                first={this.state.first}
                 imageURL={this.state.imageURL}
                 onSuccess={this.successfulSignIn}
                 onFailure={this.unsuccessfulSignIn}
@@ -99,7 +99,7 @@ class App extends Component {
             <Route exact path="/"
               render={(props) => <Home {...props}
                 userID={this.state.googleID}
-                firstName={this.state.firstName}
+                first={this.state.first}
                 imageURL={this.state.imageURL}
                 onSuccess={this.successfulSignIn}
                 onFailure={this.unsuccessfulSignIn}

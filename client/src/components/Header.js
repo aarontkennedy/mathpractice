@@ -20,15 +20,15 @@ class Header extends Component {
           {this.props.userID ?
             <div>
               {/*
-              {this.props.firstName ?
-              <span className="show-for-large-up Header-greeting">Welcome, {this.props.firstName}. </span>
+              {this.props.first ?
+              <span className="show-for-large-up Header-greeting">Welcome, {this.props.first}. </span>
               : "" }
               */}
 
               <Link to="/"><FontAwesomeIcon className="Header-homeicon" icon="home" /></Link>
 
               {this.props.imageURL ? 
-              <img className="Header-user-icon" alt={`User: ${this.props.firstName}`} src={this.props.imageURL} />
+              <img className="Header-user-icon" alt={`User: ${this.props.first}`} src={this.props.imageURL} />
               : ""}
 
               <GoogleLogout

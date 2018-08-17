@@ -63,6 +63,9 @@ problems.ease LIMIT ?;`;
         let q = `
         INSERT INTO problemStats (learner_id, problem_id)
         SELECT ?, problem FROM problems WHERE problems.category=?;`;
+        console.log(q);
+        console.log(learnerID);
+        console.log(problemCategory);
 
         return performDatabaseCall(q, [learnerID, problemCategory]);
     },

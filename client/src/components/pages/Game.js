@@ -81,7 +81,7 @@ class Game extends Component {
         return (<div className="Game">
             <Header
                 userID={this.props.userID}
-                firstName={this.props.firstName}
+                first={this.props.first}
                 imageURL={this.props.imageURL}
                 signOut={this.props.signOut} />
 
@@ -110,7 +110,7 @@ class Game extends Component {
         return (<div className="Game">
             <Header
                 userID={this.props.userID}
-                firstName={this.props.firstName}
+                first={this.props.first}
                 imageURL={this.props.imageURL}
                 signOut={this.props.signOut} />
 
